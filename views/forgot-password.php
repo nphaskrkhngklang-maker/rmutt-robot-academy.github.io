@@ -1,0 +1,5 @@
+<section class="login-panel login-simple"><div class="login-box"><a class="back-link" href="<?= e(url('login')) ?>">← กลับไปเข้าสู่ระบบ</a><h2>ลืมรหัสผ่าน</h2>
+<?php require __DIR__.'/../includes/errors.php'; ?>
+<?php if($sent): ?><div class="alert success" role="status">หากรหัสนักศึกษาหรืออีเมลตรงกับบัญชีที่เปิดใช้งาน ระบบได้ส่งคำขอให้สตาฟหลักตรวจสอบแล้ว</div><p class="muted">ติดต่อสตาฟหลักเพื่อยืนยันตัวตนและรับรหัสใหม่ ระบบยังไม่ส่งรหัสหรือลิงก์ทางรหัสนักศึกษาหรืออีเมล</p><a class="button primary full" href="<?= e(url('login')) ?>">กลับไปเข้าสู่ระบบ</a>
+<?php else: ?><p class="muted">กรอกรหัสนักศึกษาหรืออีเมลที่ใช้เข้าสู่ระบบ เพื่อขอให้สตาฟหลักช่วยตั้งรหัสผ่านใหม่</p><form method="post" class="form-stack"><?= csrf_field() ?><label>รหัสนักศึกษาหรืออีเมลบัญชี<input type="text" name="email" required maxlength="190" autocomplete="username" value="<?= e($email) ?>" placeholder="รหัสนักศึกษา หรืออีเมล"></label><button class="button primary full">ส่งคำขอถึงสตาฟหลัก</button></form><?php endif ?>
+<p class="login-help">หากคุณเป็นสตาฟหลักเพียงคนเดียวและเข้าไม่ได้ ให้ติดต่อผู้ดูแลติดตั้งระบบเพื่อกู้บัญชี</p></div></section>

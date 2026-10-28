@@ -1,0 +1,15 @@
+<?php $criteria=$match['game']['criteria']??[]; ?>
+<div class="page-heading"><div><span class="eyebrow text-teal">SCORE SHEET</span><h1><?= e($title) ?></h1><h2><?= e($match['game']['name']) ?></h2><p>รอบ <?= e($match['round_no']) ?> · คิว <?= e($match['queue_no']) ?> · สนาม <?= e($match['field_id']) ?> · แมตช์ #<?= e($match['id']) ?></p></div><a class="button secondary no-print" href="<?= e(url('scoring',['camp_id'=>$match['camp_id']])) ?>">กลับหน้าสนาม</a></div>
+<?php require __DIR__.'/../includes/errors.php'; ?>
+<p class="muted">คะแนนใช้เกณฑ์ของรอบที่ยืนยันแล้ว · <?= $match['score_version']?'บันทึกครั้งที่ '.e($match['score_version']).' เมื่อ '.e($match['scored_at']):'ยังไม่ได้บันทึกคะแนน' ?></p>
+<?php if($edit&&$match['status']==='waiting'): ?><div class="alert">รอให้สตาฟหลักเริ่มแมตช์ก่อนกรอกคะแนน</div><?php $edit=false; endif ?>
+<?php if($edit): ?><form method="post" data-score-entry-form><?= csrf_field() ?><input type="hidden" name="game_id" value="<?= e($match['game_id']) ?>"><input type="hidden" name="round_no" value="<?= e($match['round_no']) ?>"><input type="hidden" name="field_id" value="<?= e($match['field_id']) ?>"><input type="hidden" name="score_version" value="<?= e($match['score_version']) ?>"><?php endif ?>
+<div class="ops-card-grid score-sheet-grid">
+<?php foreach($match['entries'] as $entry): $total=0;$filled=0; ?><section class="panel ops-card" data-score-unit><h2><?= e($entry['name_snapshot']) ?></h2><p class="muted"><?= $entry['unit_type']==='group'?'ทีมหลัก':'ทีมย่อย' ?></p>
+<?php foreach($criteria as $i=>$criterion): $stored=$match['scores'][$entry['id']][$i]??null;if($stored!==null){$total+=$stored;$filled++;}$posted=$submitted[$entry['id']][$i]??null;$value=is_scalar($posted)?(string)$posted:($stored!==null?ScoringService::decimal($stored):''); ?>
+<div class="score-entry-row"><label for="score-<?= e($entry['id']) ?>-<?= $i ?>"><?= e($criterion['name']) ?><small><?= e($criterion['min_score']) ?> ถึง <?= e($criterion['max_score']) ?> · <?= $criterion['score_type']==='integer'?'จำนวนเต็ม':'ทศนิยม' ?></small></label>
+<?php if($edit): ?><input id="score-<?= e($entry['id']) ?>-<?= $i ?>" type="number" name="scores[<?= e($entry['id']) ?>][<?= $i ?>]" data-entry="<?= e($entry['id']) ?>" data-criterion="<?= $i ?>" min="<?= e($criterion['min_score']) ?>" max="<?= e($criterion['max_score']) ?>" step="<?= $criterion['score_type']==='integer'?'1':'0.01' ?>" required value="<?= e($value) ?>"><?php else: ?><strong><?= $stored!==null?e(ScoringService::decimal($stored)):'ยังไม่บันทึก' ?></strong><?php endif ?></div>
+<?php endforeach ?>
+<div class="score-total">รวม <strong data-score-total><?= $filled===count($criteria)&&$criteria?e(ScoringService::decimal($total)):'—' ?></strong></div>
+</section><?php endforeach ?></div>
+<?php if($edit): ?><input type="hidden" name="form_complete" value="1"><div class="form-actions"><button class="button primary">บันทึกคะแนนทุกทีมในแมตช์</button></div><p data-score-save-notice role="status"></p></form><?php else: ?><button type="button" class="button secondary no-print" data-print-score>พิมพ์ใบบันทึกคะแนน</button><?php endif ?>

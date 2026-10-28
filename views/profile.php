@@ -1,0 +1,10 @@
+<div class="page-heading"><div><h1>โปรไฟล์ของฉัน</h1><p>ตั้งชื่อที่แสดงและจัดการข้อมูลเข้าสู่ระบบของคุณ</p></div></div>
+<section class="panel form-panel"><?php require __DIR__.'/../includes/errors.php'; ?><form method="post" class="form-stack"><?= csrf_field() ?>
+<?php if(!empty($user['student_id'])): ?><label>รหัสนักศึกษา<input value="<?= e($user['student_id']) ?>" readonly aria-readonly="true"></label><?php endif ?>
+<label>ชื่อที่แสดง<input name="name" maxlength="150" autocomplete="name" required value="<?= e($data['name']) ?>"></label>
+<label>อีเมลติดต่อ<input type="email" name="email" maxlength="190" autocomplete="email" <?= empty($user['student_id'])?'required':'' ?> value="<?= e($data['email']) ?>"></label>
+<label>เบอร์โทรศัพท์<input type="tel" name="phone" maxlength="30" autocomplete="tel" value="<?= e($data['phone']??'') ?>" placeholder="กรอกเบอร์โทรของคุณ"></label>
+<p class="field-help">สิทธิ์ปัจจุบัน: <?= e(role_label($user['role'])) ?></p>
+<?php if(!empty($user['needs_setup'])): ?><p class="alert">บัญชีนี้เข้าสู่ระบบด้วยรหัสนักศึกษาได้เลย ไม่จำเป็นต้องตั้งรหัสผ่าน</p><?php endif ?><details class="profile-password" <?= isset($_POST['new_password'])&&$_POST['new_password']!==''?'open':'' ?>><summary>เปลี่ยนรหัสผ่าน</summary><div class="form-stack"><label>รหัสผ่านใหม่<input type="password" name="new_password" autocomplete="new-password"><small class="field-help">12–72 ไบต์ แนะนำอักษรอังกฤษ ตัวเลข และสัญลักษณ์</small></label><label>ยืนยันรหัสผ่านใหม่<input type="password" name="confirm_password" autocomplete="new-password"></label></div></details>
+<?php if(empty($user['needs_setup'])): ?><label>รหัสผ่านปัจจุบัน<input type="password" name="current_password" autocomplete="current-password"><small class="field-help">กรอกเมื่อเปลี่ยนอีเมลหรือรหัสผ่าน หากแก้เฉพาะชื่อ เว้นว่างได้</small></label>
+<?php endif ?><a class="text-link" href="<?= e(url('forgot-password')) ?>">ลืมรหัสผ่านปัจจุบัน?</a><div class="form-actions"><a class="button secondary" href="<?= e(url('dashboard')) ?>">กลับภาพรวม</a><button class="button primary">บันทึกโปรไฟล์</button></div></form></section>
