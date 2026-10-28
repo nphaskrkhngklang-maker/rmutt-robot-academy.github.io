@@ -1,0 +1,2 @@
+document.querySelector('[data-rra-theme]')?.addEventListener('click',()=>{const theme=document.body.dataset.theme==='light'?'dark':'light';document.body.dataset.theme=theme;try{localStorage.setItem('rra-theme',theme)}catch{}});try{document.body.dataset.theme=localStorage.getItem('rra-theme')||'light'}catch{}
+document.querySelectorAll('[data-confirm]').forEach(button=>button.addEventListener('click',e=>{if(!confirm(button.dataset.confirm))e.preventDefault()}));
