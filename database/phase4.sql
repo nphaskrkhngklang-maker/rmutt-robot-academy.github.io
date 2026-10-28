@@ -1,0 +1,48 @@
+CREATE TABLE IF NOT EXISTS team_readiness (
+ team_id BIGINT UNSIGNED PRIMARY KEY,
+ camp_id BIGINT UNSIGNED NOT NULL,
+ is_ready TINYINT(1) NOT NULL DEFAULT 0,
+ version INT UNSIGNED NOT NULL DEFAULT 0,
+ FOREIGN KEY (team_id,camp_id) REFERENCES sub_teams(id,camp_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS competition_rounds (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ camp_id BIGINT UNSIGNED NOT NULL,
+ game_id BIGINT UNSIGNED NOT NULL,
+ round_no SMALLINT UNSIGNED NOT NULL,
+ config_snapshot LONGTEXT NOT NULL,
+ game_snapshot LONGTEXT NOT NULL,
+ pool_snapshot LONGTEXT NOT NULL,
+ confirmed_by BIGINT UNSIGNED NOT NULL,
+ confirmed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ UNIQUE KEY game_round (game_id,round_no),
+ FOREIGN KEY (camp_id) REFERENCES camps(id) ON DELETE CASCADE,
+ FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS competition_matches (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ round_id BIGINT UNSIGNED NOT NULL,
+ game_id BIGINT UNSIGNED NOT NULL,
+ round_no SMALLINT UNSIGNED NOT NULL,
+ queue_no INT UNSIGNED NOT NULL,
+ field_id SMALLINT UNSIGNED NOT NULL,
+ status ENUM('waiting','playing','finished') NOT NULL DEFAULT 'waiting',
+ version INT UNSIGNED NOT NULL DEFAULT 0,
+ UNIQUE KEY round_slot (round_id,queue_no,field_id),
+ FOREIGN KEY (round_id) REFERENCES competition_rounds(id) ON DELETE CASCADE,
+ FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS competition_entries (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ round_id BIGINT UNSIGNED NOT NULL,
+ match_id BIGINT UNSIGNED NOT NULL,
+ unit_type ENUM('sub_team','group') NOT NULL,
+ entity_id BIGINT UNSIGNED NOT NULL,
+ group_id BIGINT UNSIGNED NOT NULL,
+ name_snapshot VARCHAR(255) NOT NULL,
+ UNIQUE KEY once_per_round (round_id,entity_id),
+ FOREIGN KEY (round_id) REFERENCES competition_rounds(id) ON DELETE CASCADE,
+ FOREIGN KEY (match_id) REFERENCES competition_matches(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE competition_entries MODIFY name_snapshot VARCHAR(255) NOT NULL;

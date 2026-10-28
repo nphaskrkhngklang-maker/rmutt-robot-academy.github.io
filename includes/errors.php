@@ -1,0 +1,1 @@
+<?php if (!empty($errors)): ?><div class="alert error" role="alert"><strong>กรุณาตรวจสอบข้อมูล</strong><ul><?php foreach (array_unique($errors) as $error): ?><li><?= e($error) ?></li><?php endforeach ?></ul></div><?php endif ?>

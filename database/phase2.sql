@@ -1,0 +1,60 @@
+CREATE TABLE IF NOT EXISTS camp_groups (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ camp_id BIGINT UNSIGNED NOT NULL,
+ name VARCHAR(100) NOT NULL,
+ UNIQUE KEY group_name (camp_id,name), UNIQUE KEY group_camp (id,camp_id),
+ FOREIGN KEY (camp_id) REFERENCES camps(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS sub_teams (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ camp_id BIGINT UNSIGNED NOT NULL,
+ group_id BIGINT UNSIGNED NOT NULL,
+ name VARCHAR(100) NOT NULL,
+ UNIQUE KEY team_name (camp_id,name), UNIQUE KEY team_camp (id,camp_id),
+ FOREIGN KEY (group_id,camp_id) REFERENCES camp_groups(id,camp_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS camp_team_locks (
+ camp_id BIGINT UNSIGNED PRIMARY KEY,
+ is_locked TINYINT(1) NOT NULL DEFAULT 0,
+ FOREIGN KEY (camp_id) REFERENCES camps(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS staff_assignments (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ camp_id BIGINT UNSIGNED NOT NULL,
+ user_id BIGINT UNSIGNED NOT NULL,
+ type ENUM('group','team','field','general') NOT NULL,
+ group_id BIGINT UNSIGNED NULL,
+ sub_team_id BIGINT UNSIGNED NULL,
+ field_name VARCHAR(100) NOT NULL DEFAULT '',
+ description VARCHAR(1000) NOT NULL DEFAULT '',
+ FOREIGN KEY (camp_id) REFERENCES camps(id) ON DELETE CASCADE,
+ FOREIGN KEY (user_id) REFERENCES users(id),
+ FOREIGN KEY (group_id,camp_id) REFERENCES camp_groups(id,camp_id) ON DELETE CASCADE,
+ FOREIGN KEY (sub_team_id,camp_id) REFERENCES sub_teams(id,camp_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS equipment (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ camp_id BIGINT UNSIGNED NOT NULL,
+ name VARCHAR(200) NOT NULL,
+ category VARCHAR(100) NOT NULL,
+ quantity INT UNSIGNED NOT NULL,
+ status ENUM('not_checked','checking','checked') NOT NULL DEFAULT 'not_checked',
+ notes VARCHAR(2000) NOT NULL DEFAULT '',
+ version INT UNSIGNED NOT NULL DEFAULT 0,
+ FOREIGN KEY (camp_id) REFERENCES camps(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS timeline_tasks (
+ all_staff TINYINT(1) NOT NULL DEFAULT 0,
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ camp_id BIGINT UNSIGNED NOT NULL,
+ name VARCHAR(200) NOT NULL,
+ description VARCHAR(2000) NOT NULL DEFAULT '',
+ user_id BIGINT UNSIGNED NOT NULL,
+ task_date DATE NOT NULL,
+ task_time TIME NOT NULL,
+ phase ENUM('before','during','after') NOT NULL,
+ status ENUM('not_done','done') NOT NULL DEFAULT 'not_done',
+ version INT UNSIGNED NOT NULL DEFAULT 0,
+ FOREIGN KEY (camp_id) REFERENCES camps(id) ON DELETE CASCADE,
+ FOREIGN KEY (user_id) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

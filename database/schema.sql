@@ -1,0 +1,43 @@
+CREATE TABLE IF NOT EXISTS users (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ name VARCHAR(150) NOT NULL,
+ email VARCHAR(190) NULL UNIQUE,
+ student_id VARCHAR(20) NULL UNIQUE,
+ phone VARCHAR(30) NOT NULL DEFAULT '',
+ needs_setup TINYINT(1) NOT NULL DEFAULT 0,
+ password_hash VARCHAR(255) NOT NULL,
+ role ENUM('main_staff','staff') NOT NULL DEFAULT 'staff',
+ is_active TINYINT(1) NOT NULL DEFAULT 1,
+ auth_version INT UNSIGNED NOT NULL DEFAULT 1,
+ created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS camps (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ name VARCHAR(200) NOT NULL,
+ start_date DATE NOT NULL,
+ end_date DATE NOT NULL,
+ status ENUM('draft','active','completed','cancelled') NOT NULL DEFAULT 'draft',
+ description TEXT NOT NULL,
+ created_by BIGINT UNSIGNED NOT NULL,
+ created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ CONSTRAINT fk_camp_creator FOREIGN KEY (created_by) REFERENCES users(id),
+ CONSTRAINT chk_camp_dates CHECK (end_date >= start_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Camp access membership only. Operational duties belong to Phase 2.
+CREATE TABLE IF NOT EXISTS camp_users (
+ camp_id BIGINT UNSIGNED NOT NULL,
+ user_id BIGINT UNSIGNED NOT NULL,
+ PRIMARY KEY (camp_id,user_id),
+ CONSTRAINT fk_membership_camp FOREIGN KEY (camp_id) REFERENCES camps(id) ON DELETE CASCADE,
+ CONSTRAINT fk_membership_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS login_attempts (
+ attempt_key CHAR(64) PRIMARY KEY,
+ attempts INT UNSIGNED NOT NULL DEFAULT 0,
+ window_start DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

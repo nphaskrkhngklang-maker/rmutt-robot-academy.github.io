@@ -1,0 +1,2 @@
+ALTER TABLE games ADD COLUMN IF NOT EXISTS source_article VARCHAR(16) NULL;
+ALTER TABLE score_criteria MODIFY min_score DECIMAL(12,2) NULL, MODIFY max_score DECIMAL(12,2) NULL;
