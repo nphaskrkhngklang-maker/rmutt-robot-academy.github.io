@@ -1,0 +1,14 @@
+/config/local.php
+/storage/*
+!/storage/.gitkeep
+/uploads/*
+!/uploads/.gitkeep
+.env
+.env.*
+*.log
+*.zip
+*.xlsx
+*.csv
+/.test-runtime/
+/scripts/import-students-*.php
+/scripts/prepare-student-staff.php

@@ -1,0 +1,7 @@
+Options -Indexes
+DirectoryIndex index.php
+RewriteEngine On
+RewriteRule ^(config|core|controllers|models|services|includes|views|database|scripts|tests|storage|uploads|\.test-runtime)(/|$) - [F,L,NC]
+<FilesMatch "(^\.|\.(md|sql|log|json|lock)$|^router\.php$)">
+    Require all denied
+</FilesMatch>
